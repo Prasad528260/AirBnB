@@ -1,0 +1,90 @@
+<%- include('../partials/head') %>
+  </head>
+  <body class="bg-gray-50">
+    <%- include('../partials/nav') %>
+    
+    <!-- Header Section -->
+    <div class="bg-gray-900 py-16">
+      <div class="container mx-auto px-4">
+        <h1 class="text-4xl font-bold text-white mb-4">Reserve Your Stay</h1>
+        <p class="text-gray-300">Complete your booking details</p>
+      </div>
+    </div>
+
+    <!-- Reservation Form -->
+    <div class="container mx-auto px-4 py-12">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div class="p-8">
+            <form action="/reserve/<%= home._id %>" method="POST">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Home Details -->
+                <div class="space-y-6">
+                  <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Home Details</h3>
+                    <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden mb-4">
+                      <img src="<%= home.photo %>" alt="<%= home.houseName %>" class="w-full h-full object-cover">
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-800"><%= home.houseName %></h4>
+                    <p class="text-gray-600"><%= home.location %></p>
+                    <div class="flex items-center mt-2">
+                      <span class="text-yellow-400 mr-1">★</span>
+                      <span class="text-gray-700"><%= home.rating %>/5</span>
+                    </div>
+                  </div>
+                  <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                      <span class="text-gray-600">Price per night</span>
+                      <span class="font-semibold">$<%= home.price %></span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-gray-600">Total for <%= days %> nights</span>
+                      <span class="font-semibold text-lg">$<%= totalPrice %></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Booking Form -->
+                <div class="space-y-6">
+                  <h3 class="text-xl font-semibold text-gray-800 mb-2">Booking Information</h3>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="checkIn">
+                      Check-in Date
+                    </label>
+                    <input type="date" id="checkIn" name="checkIn" value="<%= checkIn %>" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="checkOut">
+                      Check-out Date
+                    </label>
+                    <input type="date" id="checkOut" name="checkOut" value="<%= checkOut %>" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="guests">
+                      Number of Guests
+                    </label>
+                    <input type="number" id="guests" name="guests" min="1" max="<%= home.maxGuests %>" 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent" required>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2" for="specialRequests">
+                      Special Requests
+                    </label>
+                    <textarea id="specialRequests" name="specialRequests" rows="3" 
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"></textarea>
+                  </div>
+                  <button type="submit" 
+                          class="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300">
+                    Confirm Booking
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
