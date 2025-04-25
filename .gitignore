@@ -9,5 +9,5 @@ node_modules/
 Thumbs.db
 
 # Optional: if you use uploads
-uploads/*
+# uploads/*
 !uploads/.gitkeep

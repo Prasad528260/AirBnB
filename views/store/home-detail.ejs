@@ -35,6 +35,13 @@
                           <span class="ml-2 text-lg"><%= home.rating %> / 5</span>
                       </div>
                   </div>
+                  <div class="border-b pb-4">
+                    <h3 class="text-2xl font-semibold mb-2">Rules</h3>
+                    <a href="/pdfs/<%= home._id %>" class="text-green-600 text-xl font-bold">
+                        <%= home.pdf %>
+                      </a>
+                      
+                </div>
                   <div class="mt-2">
                     <%- include('../partials/favourite') %>
                   </div>
