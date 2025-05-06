@@ -1,4 +1,5 @@
 const Home = require("../models/home");
+const Booking = require("../models/Booking");
 const fs = require("fs");
 
 exports.getAddHome = (req, res, next) => {
@@ -65,6 +66,7 @@ exports.postAddHome = (req, res, next) => {
     photo,
     pdf,
     description,
+    owner: req.session.user._id 
   });
   home.save().then(() => {
     console.log("Home Saved successfully");
@@ -130,4 +132,32 @@ exports.postDeleteHome = (req, res, next) => {
     .catch((error) => {
       console.log("Error while deleting ", error);
     });
+};
+
+exports.getBookedHouses = async (req, res, next) => {
+  try {
+    // Find all bookings for homes owned by the current host
+    const hostId = req.session.user._id;
+    // Find homes owned by this host
+    const homes = await Home.find({ owner: hostId });
+    const homeIds = homes.map(h => h._id);
+    // Find bookings for these homes, populate user and home
+    const bookings = await Booking.find({ home: { $in: homeIds } }).populate('user').populate('home');
+    res.render("host/booked-houses", {
+      bookings: bookings,
+      pageTitle: "Booked Houses List",
+      currentPage: "booked-houses",
+      isLoggedIn: req.isLoggedIn,
+      user: req.session.user,
+    });
+  } catch (err) {
+    console.log(err);
+    res.render("host/booked-houses", {
+      bookings: [],
+      pageTitle: "Booked Houses List",
+      currentPage: "booked-houses",
+      isLoggedIn: req.isLoggedIn,
+      user: req.session.user,
+    });
+  }
 };

@@ -23,7 +23,7 @@
                   <div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">Home Details</h3>
                     <div class="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden mb-4">
-                      <img src="<%= home.photo %>" alt="<%= home.houseName %>" class="w-full h-full object-cover">
+                      <img src="/<%= home.photo.replace(/\\/g, '/') %>" alt="<%= home.houseName %>" class="w-full h-full object-cover">
                     </div>
                     <h4 class="text-lg font-semibold text-gray-800"><%= home.houseName %></h4>
                     <p class="text-gray-600"><%= home.location %></p>

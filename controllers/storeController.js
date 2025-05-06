@@ -1,5 +1,6 @@
 const Home = require("../models/home");
 const User = require("../models/user");
+const Booking = require("../models/Booking");
 
 exports.getIndex = (req, res, next) => {
   console.log("Session Value: ", req.session);
@@ -26,13 +27,30 @@ exports.getHomes = (req, res, next) => {
   });
 };
 
-exports.getBookings = (req, res, next) => {
-  res.render("store/bookings", {
-    pageTitle: "My Bookings",
-    currentPage: "bookings",
-    isLoggedIn: req.isLoggedIn, 
-    user: req.session.user,
-  });
+exports.getBookings = async (req, res, next) => {
+  try {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+    const userId = req.session.user._id;
+    const bookings = await Booking.find({ user: userId }).populate('home');
+    res.render("store/bookings", {
+      bookings: bookings,
+      pageTitle: "My Bookings",
+      currentPage: "bookings",
+      isLoggedIn: req.isLoggedIn, 
+      user: req.session.user,
+    });
+  } catch (err) {
+    console.log(err);
+    res.render("store/bookings", {
+      bookings: [],
+      pageTitle: "My Bookings",
+      currentPage: "bookings",
+      isLoggedIn: req.isLoggedIn, 
+      user: req.session.user,
+    });
+  }
 };
 
 exports.getFavouriteList = async (req, res, next) => {
@@ -114,3 +132,79 @@ exports.downloadPDF = [(req,res,next)=>{
       res.status(500).send('Error processing request');
     });
 }];
+
+exports.postAddToBooking = async (req, res, next) => {
+  const homeId = req.body.id;
+  const userId = req.session.user._id;
+  const { checkIn, checkOut } = req.body;
+  const overlap = await Booking.findOne({
+    home: homeId,
+    $or: [
+      { checkIn: { $lt: new Date(checkOut) }, checkOut: { $gt: new Date(checkIn) } }
+    ]
+  });
+  if (overlap) {
+    return res.redirect("/booking?error=Home already booked for selected dates");
+  }
+  const booking = new Booking({
+    home: homeId,
+    user: userId,
+    checkIn: new Date(checkIn),
+    checkOut: new Date(checkOut)
+  });
+  await booking.save();
+  res.redirect("/booking");
+};
+
+exports.postRemoveFromBooking = async (req, res, next) => {
+  const bookingId = req.params.bookingId;
+  await Booking.findByIdAndDelete(bookingId);
+  res.redirect("/booking");
+};
+
+exports.getReserve = async (req, res, next) => {
+  const homeId = req.params.homeId;
+  const userId = req.session.user._id;
+  const existing = await Booking.findOne({ home: homeId, user: userId });
+  if (existing) {
+    return res.redirect("/booking?error=Already booked this home");
+  }
+  const home = await Home.findById(homeId);
+  if (!home) {
+    return res.redirect("/homes");
+  }
+  res.render("store/reserve",  {
+    pageTitle: "Reserve",
+    currentPage: "reserve",
+    isLoggedIn: req.isLoggedIn,
+    user: req.session.user,
+    home: home,
+    days: 1,
+    totalPrice: home.price,
+    checkIn: '',
+    checkOut: ''
+  });
+};
+
+exports.postReserve = async (req, res, next) => {
+  const homeId = req.params.homeId;
+  const userId = req.session.user._id;
+  const { checkIn, checkOut } = req.body;
+  const overlap = await Booking.findOne({
+    home: homeId,
+    $or: [
+      { checkIn: { $lt: new Date(checkOut) }, checkOut: { $gt: new Date(checkIn) } }
+    ]
+  });
+  if (overlap) {
+    return res.redirect("/booking?error=Home already booked for selected dates");
+  }
+  const booking = new Booking({
+    home: homeId,
+    user: userId,
+    checkIn: new Date(checkIn),
+    checkOut: new Date(checkOut)
+  });
+  await booking.save();
+  res.redirect("/booking");
+};

@@ -20,6 +20,7 @@ const homeSchema = mongoose.Schema({
   photo: String,
   pdf: String,
   description: String,
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });
 
 // homeSchema.pre('findOneAndDelete', async function(next) {
